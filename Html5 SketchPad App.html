@@ -1,0 +1,296 @@
+<html>
+<head>
+<title>Simple Drawing app</title>
+
+<style>
+#sketch{
+position:absolute; 
+ border:1px solid orangered;
+ top:48px;
+ background-color:rgb(255,255,255); 
+ left:170px;
+ 
+}
+
+#activatePen{
+position:absolute;
+border: 1px dotted black;
+top:80px;
+left:30px;
+cursor: hand;
+background: url('pencil.png');
+height:50;
+}
+
+#activateEraser{
+position:absolute;
+border: 1px dotted black;
+top:160px;
+left:30px;
+cursor: hand;
+background: url('eraser.png');
+height:50;
+
+}
+
+#activateEraser:hover{
+background:url('eraserhover.png');
+}
+#activatePen:hover{
+background:url('pencilhover.png');
+}
+body{
+
+background-color: black;
+}
+
+
+#leftLeg{
+position:absolute;
+border: solid 1px black;
+height:2;
+width:200;
+transform: rotate(135deg);
+top:420px;
+left:430px;
+background-color: orangered;
+}
+
+
+#rightLeg{
+position:absolute;
+border: solid 1px black;
+height:2;
+width:200;
+transform: rotate(45deg);
+top:420px;
+left:430px;
+background-color:orangered;
+}
+
+
+
+
+#tools{
+position:absolute;
+border: solid 1px rgb(105,105,105);
+
+top:45px;
+left:25;
+display:block;
+height:180;
+width:100;
+background-color: orangered;
+
+}
+
+.labels{
+background-color:black;
+color:white;
+width:30;
+height:30;
+font-size:2em
+
+}
+
+#spng{
+position:absolute;
+border-radius: 90px;
+width:60px;
+height:60px;
+top:400px;
+left:500px;
+background-color: orangered;
+color:white;
+
+}
+
+#spng:hover{
+cursor:pointer;
+background-color: orange;
+}
+
+#pencilColor{
+visibility:HIDDEN;
+}
+
+
+#tip{
+border: solid 1px black;
+position: absolute;
+top:75px;
+left:42px;
+background:rgb(255,69,0);
+border-radius:30px;
+width:8px;
+height:8px;
+background-color: black;
+z-index:4;
+}
+
+#status{
+position:absolute;
+top:400px;
+left:20px;
+font-size:15;
+color:white;
+
+}
+</style>
+</head>
+<body>
+<script>
+//Function that returns the current mouse x and y position on the canvas. ( I.e. coordinates)
+function mousePosition(sketchCanvas, event) {
+        var rect = sketchCanvas.getBoundingClientRect();
+       return {
+          x: event.clientX - rect.left,
+          y: event.clientY - rect.top
+        }
+      }
+	  
+
+
+ window.onload= function(){
+  var sketchCanvas= document.getElementById("sketch");
+ var sketchCTX= sketchCanvas.getContext("2d");
+ var penDown= false;
+ var eraser=false;
+ 
+  var color=document.getElementById("pencilColor");
+
+	var spng = document.getElementById("spng");
+	
+	spng.addEventListener('click',saveaspng,false);
+	function saveaspng(event){
+	
+window.location = sketchCanvas.toDataURL();
+
+	}
+	
+ function pencil(){
+document.body.style.cursor='default';
+ sketchCanvas.addEventListener("mousedown",
+function(event){
+mPos= mousePosition(sketchCanvas,event);
+x1= mPos.x;
+y1= mPos.y;
+penDown=true;
+
+ sketchCTX.beginPath();
+ 
+ sketchCTX.moveTo(x1,y1);
+ },
+ false);
+
+ sketchCanvas.addEventListener("mousemove",
+ function(event){
+ mPos2= mousePosition(sketchCanvas,event);
+x2= mPos2.x;
+y2= mPos2.y;
+if(penDown){
+//activate eraser
+if(eraser){
+sketchCTX.strokeStyle='white';
+sketchCTX.shadowColor='white';
+sketchCTX.shadowOffsetX='4';
+sketchCTX.shadowOffsetY='4';
+sketchCTX.shadowBlur='5';
+
+}else{
+sketchCTX.strokeStyle=color.value;
+  }
+  sketchCTX.lineTo(x2,y2);
+ sketchCTX.stroke();}
+
+
+ 
+ 
+ },
+ false);
+ 
+ sketchCanvas.addEventListener("mouseup",
+ function(event){
+ penDown=false;
+
+ }
+,false);
+
+}
+
+
+
+//Tools
+
+var apen= document.getElementById('activatePen');
+apen.addEventListener('click',
+function(event){
+eraser=false;
+var tools= document.getElementById('tools');
+
+var tip= document.getElementById('tip');
+
+tools.style.visibility='visible';
+apen.style.transform= 'rotate(45deg)';
+tip.style.left='22px';
+aeraser.style.transform= 'rotate(0deg)';
+pencil();
+},
+false);
+
+
+
+var aeraser= document.getElementById('activateEraser');
+aeraser.addEventListener('click',
+function(event){
+
+var tip= document.getElementById('tip');
+tip.style.left='39px';
+apen.style.transform= 'rotate(0deg)';
+aeraser.style.transform= 'rotate(45deg)';
+eraser=true;
+pencil();
+},
+false);
+
+
+
+
+
+
+
+}
+
+
+function tipset(){
+
+var color= document.getElementById('pencilColor');
+ tip= document.getElementById('tip');
+tip.style.background=color.value;
+}
+function pcolor(){
+
+var color= document.getElementById('pencilColor');
+color.click();
+ }
+</script>
+<p style='color:white;'>Html5 Simple SketchPad App </p>
+ <div id='tools'>
+ <input id='pencilColor' onchange='tipset()' type='color'  />
+<div id='tip' onclick='pcolor()'></div>
+</div>
+<div id='leftLeg'></div>
+<div id='rightLeg'></div>
+
+<button id='spng'>Save</button>
+
+<div id='activatePen'>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
+<div id='activateEraser'>&nbsp; &nbsp; &nbsp; &nbsp;&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
+
+<p id='status'>Click on the pencil Image to activate pencil. <br>
+Click on the eraser image activate eraser.<br>
+Click on the pencil's tip (currently black) to change the pencil's color.
+</p>
+<canvas id="sketch" width="730" height="350">    </canvas>
+</body>
+</html>
